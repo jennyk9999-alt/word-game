@@ -1,0 +1,2127 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>초등 영어 단어 게임 · Lesson 7</title>
+
+<style>
+  /* 크레파스 색.
+     따뜻한 색(주황·노랑) 위엔 어두운 글자(--on-warm), 진한 색(파랑·초록·빨강) 위엔 흰 글자(--on-cool). */
+  :root {
+    --paper:      #FFFBF2;
+    --card:       #FFFFFF;
+    --ink:        #2A2340;
+    --ink-soft:   #6B6280;
+    --line:       #2A2340;
+    --orange:     #FF7A18;
+    --blue:       #2F6BF0;
+    --yellow:     #FFC53D;
+    --rose:       #FFC53D;
+    --green:      #159C63;
+    --red:        #E23D2E;
+    --on-warm:    #241A00;
+    --on-cool:    #FFFFFF;
+    --shadow:     #2A2340;
+    --tab-off:    #F0E7D8;
+    --slot:       #FFF1DC;
+    --word:       #101014;
+    --radius:     18px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper:     #1E1A2B;
+      --card:      #2A2440;
+      --ink:       #FFF6E8;
+      --ink-soft:  #B4A9C9;
+      --line:      #0F0C19;
+      --orange:    #FF8C3A;
+      --blue:      #5B8BF5;
+      --yellow:    #FFC53D;
+      --rose:      #FFC53D;
+      --green:     #29C583;
+      --red:       #FF6B5A;
+      --on-warm:   #241A00;
+      --on-cool:   #14121D;
+      --shadow:    #0F0C19;
+      --tab-off:   #37304F;
+      --slot:      #3A3257;
+      --word:      #FFF6E8;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper:     #1E1A2B;
+    --card:      #2A2440;
+    --ink:       #FFF6E8;
+    --ink-soft:  #B4A9C9;
+    --line:      #0F0C19;
+    --orange:    #FF8C3A;
+    --blue:      #5B8BF5;
+    --yellow:    #FFC53D;
+    --rose:      #FFC53D;
+    --green:     #29C583;
+    --red:       #FF6B5A;
+    --on-warm:   #241A00;
+    --on-cool:   #14121D;
+    --shadow:    #0F0C19;
+    --tab-off:   #37304F;
+    --slot:      #3A3257;
+    --word:      #FFF6E8;
+  }
+  :root[data-theme="light"] {
+    --paper:      #FFFBF2;
+    --card:       #FFFFFF;
+    --ink:        #2A2340;
+    --ink-soft:   #6B6280;
+    --line:       #2A2340;
+    --orange:     #FF7A18;
+    --blue:       #2F6BF0;
+    --yellow:     #FFC53D;
+    --rose:       #FFC53D;
+    --green:      #159C63;
+    --red:        #E23D2E;
+    --on-warm:    #241A00;
+    --on-cool:    #FFFFFF;
+    --shadow:     #2A2340;
+    --tab-off:    #F0E7D8;
+    --slot:       #FFF1DC;
+    --word:       #101014;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: system-ui, -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", "맑은 고딕", sans-serif;
+    font-size: 19px;
+    line-height: 1.55;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  .wrap {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 20px 16px 64px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .count {
+    display: inline-block;
+    min-width: 1.9em;
+    margin-left: 6px;
+    padding: 1px 8px;
+    border-radius: 999px;
+    background: var(--card);
+    border: 2px solid var(--line);
+    color: var(--ink);
+    font-size: 15px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ---- 상태 띠 ---- */
+  .status {
+    border: 3px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--card);
+    box-shadow: 4px 4px 0 var(--shadow);
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .status-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .coin-label { font-weight: 800; font-size: 20px; font-variant-numeric: tabular-nums; }
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .chip {
+    font-size: 16px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border: 2px solid var(--line);
+    border-radius: 999px;
+    background: var(--slot);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .bar {
+    height: 22px;
+    border: 3px solid var(--line);
+    border-radius: 999px;
+    background: var(--slot);
+    overflow: hidden;
+  }
+  .bar > i {
+    display: block;
+    height: 100%;
+    width: 0;
+    background: repeating-linear-gradient(45deg, var(--yellow) 0 12px, var(--orange) 12px 24px);
+    transition: width .35s ease;
+  }
+
+  /* ---- 문제 ---- */
+  .panel {
+    border: 3px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--card);
+    box-shadow: 6px 6px 0 var(--shadow);
+    padding: 22px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .kicker {
+    align-self: flex-start;
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border: 2px solid var(--line);
+    border-radius: 999px;
+    background: var(--blue);
+    color: var(--on-warm);
+  }
+  .kicker.cloze { background: var(--green); }
+
+  .prompt-word {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    font-size: clamp(54px, 15vw, 88px);
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    text-align: center;
+    text-wrap: balance;
+    margin: 6px 0 0;
+    color: var(--word);
+  }
+  .prompt-sub { text-align: center; font-size: 17px; font-weight: 800; color: var(--ink-soft); margin: 0; }
+
+  .sentence {
+    font-size: clamp(26px, 6.5vw, 36px);
+    font-weight: 800;
+    text-align: center;
+    text-wrap: balance;
+    margin: 0;
+    line-height: 1.45;
+  }
+  .blank {
+    display: inline-block;
+    min-width: 3.2em;
+    border-bottom: 6px solid var(--orange);
+    vertical-align: -2px;
+  }
+
+  .choices { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 460px) { .choices { grid-template-columns: 1fr; } }
+
+  .choice {
+    font: inherit;
+    font-size: 17px;
+    font-weight: 800;
+    min-height: 48px;
+    padding: 8px;
+    border: 3px solid var(--line);
+    border-radius: 14px;
+    background: var(--slot);
+    color: var(--word);
+    cursor: pointer;
+    box-shadow: 4px 4px 0 var(--shadow);
+    transition: transform .1s ease, box-shadow .1s ease, background .1s ease;
+    text-wrap: balance;
+  }
+  .choice:hover:not(:disabled) { background: var(--yellow); }
+  .choice:active:not(:disabled) { transform: translate(4px, 4px); box-shadow: 0 0 0 var(--shadow); }
+  .choice:focus-visible { outline: 4px solid var(--blue); outline-offset: 3px; }
+  .choice.right { background: var(--green); color: var(--on-cool); }
+  .choice.wrong { background: var(--red); color: var(--on-cool); }
+  .choice:disabled { cursor: default; }
+
+  /* ---- 빈칸 타이핑 ---- */
+  .fill-wrap { display: flex; gap: 10px; flex-wrap: wrap; }
+  .fill-input {
+    font: inherit;
+    flex: 1 1 160px;
+    font-size: 22px;
+    font-weight: 800;
+    min-height: 48px;
+    padding: 8px 14px;
+    border: 3px solid var(--line);
+    border-radius: 14px;
+    background: var(--card);
+    color: var(--word);
+    box-shadow: 4px 4px 0 var(--shadow);
+  }
+  .fill-input::placeholder { color: var(--ink-soft); font-weight: 600; }
+  .fill-input:focus-visible { outline: 4px solid var(--blue); outline-offset: 2px; }
+  .fill-input.right { background: var(--green); color: var(--on-cool); }
+  .fill-input.wrong { background: var(--red); color: var(--on-cool); }
+  .fill-input:disabled { opacity: .9; }
+
+  .fill-submit {
+    font: inherit;
+    flex: 0 0 auto;
+    font-size: 19px;
+    font-weight: 900;
+    min-height: 48px;
+    padding: 8px 20px;
+    border: 3px solid var(--line);
+    border-radius: 14px;
+    background: var(--blue);
+    color: var(--on-cool);
+    cursor: pointer;
+    box-shadow: 4px 4px 0 var(--shadow);
+    transition: transform .1s ease, box-shadow .1s ease;
+  }
+  .fill-submit:active:not(:disabled) { transform: translate(4px, 4px); box-shadow: 0 0 0 var(--shadow); }
+  .fill-submit:focus-visible { outline: 4px solid var(--orange); outline-offset: 3px; }
+  .fill-submit:disabled { opacity: .5; cursor: default; }
+
+  /* ---- 철자 타이핑 연습 ---- */
+  .spell-box { display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%; }
+  .spell-ask { margin: 0; font-size: 17px; font-weight: 800; color: var(--ink-soft); }
+  .spell-letters {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+    cursor: text;
+  }
+  .spell-slot {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 44px;
+    border: 3px solid var(--line);
+    border-bottom-width: 6px;
+    border-radius: 8px;
+    background: var(--slot);
+    font-size: 21px;
+    font-weight: 900;
+    color: var(--word);
+  }
+  .spell-slot.filled { background: var(--card); }
+  .spell-slot.active { outline: 3px solid var(--blue); outline-offset: 2px; }
+  .spell-slot.wrong { background: var(--red); color: var(--on-cool); animation: spell-shake .3s ease; }
+  .spell-slot.done { background: var(--green); color: var(--on-cool); border-bottom-width: 3px; }
+  .spell-gap { width: 14px; }
+  @keyframes spell-shake { 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+
+  /* 글자 칸들 위에 그대로 겹치는 투명 입력창 — 어디를 눌러도 바로 키보드가 뜨게 (모바일 대응) */
+  .spell-hidden-input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    background: transparent;
+    opacity: 0;
+    font-size: 16px;
+    cursor: text;
+  }
+
+  .verdict {
+    border: 3px dashed var(--line);
+    border-radius: 14px;
+    padding: 14px 16px;
+    font-size: 19px;
+    font-weight: 700;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .verdict.ok { background: color-mix(in srgb, var(--green) 18%, transparent); }
+  .verdict.no { background: color-mix(in srgb, var(--red) 16%, transparent); }
+  .verdict small { font-size: 16px; font-weight: 600; color: var(--ink-soft); }
+
+  .big-btn {
+    font: inherit;
+    font-size: 22px;
+    font-weight: 900;
+    padding: 16px;
+    border: 3px solid var(--line);
+    border-radius: 14px;
+    background: var(--orange);
+    color: var(--on-warm);
+    cursor: pointer;
+    box-shadow: 5px 5px 0 var(--shadow);
+    transition: transform .1s ease, box-shadow .1s ease;
+  }
+  .big-btn:active { transform: translate(5px, 5px); box-shadow: 0 0 0 var(--shadow); }
+  .big-btn:focus-visible { outline: 4px solid var(--blue); outline-offset: 3px; }
+  .big-btn.blue { background: var(--blue); color: var(--on-cool); }
+  .big-btn.ghost {
+    background: var(--card);
+    color: var(--ink);
+    font-size: 18px;
+    font-weight: 800;
+    box-shadow: 3px 3px 0 var(--shadow);
+    padding: 12px 14px;
+  }
+
+  /* ---- 단어장 ---- */
+  .word-list { display: flex; flex-direction: column; gap: 12px; }
+  .word-item {
+    border: 3px solid var(--line);
+    border-radius: 14px;
+    background: var(--card);
+    box-shadow: 4px 4px 0 var(--shadow);
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .word-head { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .word-en {
+    font-size: clamp(54px, 15vw, 88px);
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+    color: var(--word);
+    text-wrap: balance;
+  }
+  .word-ko { font-size: 21px; font-weight: 800; text-align: center; }
+  .word-no {
+    font-size: clamp(28px, 8vw, 46px);
+    margin-right: 10px;
+    font-weight: 800;
+    color: var(--word);
+    font-variant-numeric: tabular-nums;
+  }
+  .word-sent { font-size: 17px; color: var(--ink-soft); }
+  .miss {
+    font-size: 15px;
+    font-weight: 700;
+    padding: 2px 10px;
+    border: 2px solid var(--line);
+    border-radius: 999px;
+    background: var(--slot);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  /* ---- 발음 버튼 ---- */
+  .say {
+    font: inherit;
+    font-size: 26px;
+    line-height: 1;
+    width: 58px;
+    height: 58px;
+    display: grid;
+    place-items: center;
+    flex: 0 0 auto;
+    border: 3px solid var(--line);
+    border-radius: 50%;
+    background: var(--yellow);
+    color: var(--on-warm);
+    cursor: pointer;
+    box-shadow: 3px 3px 0 var(--shadow);
+    transition: transform .1s ease, box-shadow .1s ease;
+  }
+  .say:hover { background: var(--rose); }
+  .say:active { transform: translate(3px, 3px); box-shadow: 0 0 0 var(--shadow); }
+  .say:focus-visible { outline: 4px solid var(--blue); outline-offset: 3px; }
+  .say.small { width: 42px; height: 42px; font-size: 19px; box-shadow: 2px 2px 0 var(--shadow); }
+
+  .say-row { display: flex; justify-content: center; align-items: center; gap: 10px; }
+  .say-row.left { justify-content: flex-start; margin-top: 6px; }
+  .say-label { font-size: 16px; font-weight: 700; color: var(--ink-soft); }
+
+  .word-en-wrap { display: flex; align-items: center; gap: 10px; }
+  .drill-line { display: flex; align-items: center; gap: 10px; }
+  .drill-line .drill-full { flex: 1 1 auto; }
+  .q-line { display: flex; align-items: center; gap: 8px; }
+  .q-line .q-row { flex: 1 1 auto; }
+
+  /* ---- 단어별 뜻 맞히기 ---- */
+  .mini-quiz { display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%; }
+  .mini-ask { margin: 0; font-size: 17px; font-weight: 800; color: var(--ink-soft); }
+  .mini-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; }
+  .mini-choice {
+    font: inherit;
+    font-size: 17px;
+    font-weight: 800;
+    min-height: 48px;
+    padding: 8px;
+    border: 3px solid var(--line);
+    border-radius: 12px;
+    background: var(--slot);
+    color: var(--ink);
+    cursor: pointer;
+    box-shadow: 3px 3px 0 var(--shadow);
+  }
+  .mini-choice:hover:not(:disabled) { background: var(--yellow); }
+  .mini-choice:active:not(:disabled) { transform: translate(3px, 3px); box-shadow: 0 0 0 var(--shadow); }
+  .mini-choice:focus-visible { outline: 4px solid var(--blue); outline-offset: 3px; }
+  .mini-choice.right { background: var(--green); color: var(--on-cool); }
+  .mini-choice.wrong { background: var(--red); color: var(--on-cool); }
+  .mini-choice:disabled { cursor: default; }
+
+  /* ---- 예문 안의 작은 탭 ---- */
+  .mini-tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .mini-tab {
+    font: inherit;
+    font-size: 16px;
+    font-weight: 800;
+    padding: 9px 4px;
+    border: 2px solid var(--line);
+    border-radius: 10px;
+    background: var(--card);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .mini-tab[aria-pressed="true"] { background: var(--orange); color: var(--on-warm); }
+  .mini-tab:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+
+  .pane { display: flex; flex-direction: column; gap: 8px; padding-top: 4px; }
+
+  /* ---- 단계 (점점 사라지는 문장) ---- */
+  .stage-row { display: flex; gap: 6px; flex-wrap: wrap; }
+  .stage-btn {
+    font: inherit;
+    font-size: 15px;
+    font-weight: 800;
+    padding: 6px 12px;
+    border: 2px solid var(--line);
+    border-radius: 999px;
+    background: var(--card);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .stage-btn[aria-pressed="true"] { background: var(--blue); color: var(--on-cool); }
+  .stage-btn:focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; }
+  .stage-tip { margin: 0; font-size: 14px; font-weight: 700; color: var(--ink-soft); }
+
+  /* ---- 문장 만들기 ---- */
+  .order-wrap { display: flex; flex-direction: column; gap: 10px; }
+  .order-made {
+    margin: 0;
+    min-height: 56px;
+    padding: 12px 14px;
+    border: 3px dashed var(--line);
+    border-radius: 12px;
+    background: var(--card);
+    font-size: 21px;
+    font-weight: 800;
+    line-height: 1.4;
+  }
+  .order-made.empty { color: var(--ink-soft); font-weight: 600; font-size: 17px; }
+  .order-bank { display: flex; flex-wrap: wrap; gap: 8px; }
+  .order-chip {
+    font: inherit;
+    font-size: 19px;
+    font-weight: 800;
+    padding: 10px 14px;
+    border: 3px solid var(--line);
+    border-radius: 12px;
+    background: var(--yellow);
+    color: var(--on-warm);
+    cursor: pointer;
+    box-shadow: 3px 3px 0 var(--shadow);
+  }
+  .order-chip:active { transform: translate(3px, 3px); box-shadow: 0 0 0 var(--shadow); }
+  .order-chip:focus-visible { outline: 4px solid var(--blue); outline-offset: 3px; }
+
+  /* ---- 오늘의 목표 ---- */
+  .bar-note { font-size: 15px; font-weight: 700; color: var(--ink-soft); }
+  .chip.fire { background: var(--rose); color: var(--on-warm); }
+  .goal-done {
+    padding: 10px 12px;
+    border: 3px solid var(--line);
+    border-radius: 12px;
+    background: var(--green);
+    color: var(--on-cool);
+    font-size: 18px;
+    font-weight: 900;
+    text-align: center;
+  }
+
+  /* ---- 녹음 ---- */
+  .rec-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding: 8px 0 2px;
+  }
+  .rec-btn {
+    font: inherit;
+    font-size: 17px;
+    font-weight: 800;
+    padding: 9px 14px;
+    border: 3px solid var(--line);
+    border-radius: 999px;
+    background: var(--card);
+    color: var(--ink);
+    cursor: pointer;
+    box-shadow: 3px 3px 0 var(--shadow);
+  }
+  .rec-btn:active { transform: translate(3px, 3px); box-shadow: 0 0 0 var(--shadow); }
+  .rec-btn:focus-visible { outline: 4px solid var(--blue); outline-offset: 3px; }
+  .rec-btn:disabled { opacity: .45; cursor: default; box-shadow: 2px 2px 0 var(--shadow); }
+  .rec-btn.on { background: var(--red); color: var(--on-cool); animation: blink 1s ease-in-out infinite; }
+  .rec-btn.play:not(:disabled) { background: var(--green); color: var(--on-cool); }
+  .rec-msg { font-size: 15px; font-weight: 700; color: var(--ink-soft); }
+  .rec-msg.good { color: var(--green); }
+  .rec-msg.soso { color: var(--orange); }
+  .rec-btn.listen:not(.on) { background: var(--blue); color: var(--on-cool); }
+  .rec-btn.listen.on { background: var(--red); color: var(--on-cool); animation: blink 1s ease-in-out infinite; }
+
+  @keyframes blink { 50% { opacity: .55; } }
+
+  .seg { display: flex; gap: 8px; margin-top: 4px; }
+  .seg-btn {
+    font: inherit;
+    flex: 1;
+    font-size: 18px;
+    font-weight: 800;
+    padding: 11px 8px;
+    border: 3px solid var(--line);
+    border-radius: 12px;
+    background: var(--tab-off);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .seg-btn[aria-pressed="true"] { background: var(--blue); color: var(--on-cool); }
+  .seg-btn:focus-visible { outline: 4px solid var(--orange); outline-offset: 3px; }
+
+  /* ---- 단어장 연습 문제 ---- */
+  .drills { display: flex; flex-direction: column; gap: 14px; margin-top: 4px; }
+
+  .drill {
+    border: 3px solid var(--line);
+    border-radius: 12px;
+    background: var(--slot);
+    padding: 12px 12px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .drill-head {
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: .06em;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+  }
+  .drill-full {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 800;
+    line-height: 1.4;
+    text-wrap: balance;
+  }
+  .drill-ko { margin: 0 0 4px; font-size: 17px; font-weight: 600; color: var(--ink-soft); }
+
+  .q-row {
+    font: inherit;
+    text-align: left;
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 9px 10px;
+    border: 2px solid var(--line);
+    border-radius: 10px;
+    background: var(--card);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .q-row:hover { background: var(--yellow); color: var(--on-warm); }
+  .q-row:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+
+  .q-no {
+    width: 26px;
+    height: 26px;
+    display: grid;
+    place-items: center;
+    border: 2px solid var(--line);
+    border-radius: 50%;
+    background: var(--orange);
+    color: var(--on-warm);
+    font-size: 14px;
+    font-weight: 900;
+    font-variant-numeric: tabular-nums;
+  }
+  .q-txt { font-size: 19px; font-weight: 700; line-height: 1.35; }
+  .q-ans {
+    grid-column: 2;
+    display: none;
+    font-size: 18px;
+    font-weight: 900;
+    color: var(--green);
+  }
+  .q-ans::before { content: "정답  "; font-weight: 700; color: var(--ink-soft); }
+  .q-row.open .q-ans { display: block; }
+
+  .empty {
+    text-align: center;
+    padding: 40px 20px;
+    font-size: 21px;
+    font-weight: 700;
+    color: var(--ink-soft);
+  }
+
+  .tools { display: flex; gap: 10px; flex-wrap: wrap; }
+  .tools > * { flex: 1 1 180px; }
+
+  .note {
+    font-size: 15px;
+    color: var(--ink-soft);
+    line-height: 1.6;
+    text-align: center;
+  }
+
+  .hidden { display: none !important; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+  }
+
+  .word-no.big { font-size: 0.55em; margin-right: 0.25em; vertical-align: 0.18em; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+
+  <!-- ================= 문제 풀기 ================= -->
+  <section id="view-game" aria-label="문제 풀기">
+    <div style="display:flex; flex-direction:column; gap:18px;">
+
+      <div class="status">
+        <div class="status-row">
+          <span class="coin-label" id="coin-text">맞힌 개수 0개</span>
+          <span class="chips">
+            <span class="chip" id="chip-score">푼 문제 0</span>
+            <span class="chip fire" id="chip-streak">🔥 0일 연속</span>
+          </span>
+        </div>
+        <div class="bar"><i id="goal-bar"></i></div>
+        <span class="bar-note" id="goal-note">오늘 0 / 10문제</span>
+        <div class="goal-done hidden" id="goal-done">🎉 오늘 목표 다 했어요!</div>
+      </div>
+
+      <div class="panel" id="quiz-panel">
+        <span class="kicker" id="q-kicker">Lesson 7 · Is This Your Jacket?</span>
+        <div id="q-body"></div>
+        <div class="choices" id="q-choices"></div>
+        <div id="q-verdict"></div>
+        <div class="drills" id="q-drills"></div>
+        <button class="big-btn hidden" id="btn-next">다음 문제 →</button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================= 단어 외우기 (첫 화면) ================= -->
+  <section id="view-book" aria-label="단어 외우기">
+    <div style="display:flex; flex-direction:column; gap:18px;">
+      <div class="panel">
+        <strong style="font-size:22px;">예문으로 외우기</strong>
+        <p class="note" style="text-align:left; margin:0;">
+          문장을 먼저 통째로 읽고, 아래 문제를 하나씩 풀어요.
+          한 문제에 한 단어씩 빠져 있어요. 눌러 보면 정답이 나와요.
+        </p>
+        <div class="seg" role="group" aria-label="어떤 단어를 볼까요">
+          <button class="seg-btn" id="seg-wrong" aria-pressed="true">틀린 단어 <span class="count" id="book-count">0</span></button>
+          <button class="seg-btn" id="seg-all" aria-pressed="false">전체 23개</button>
+        </div>
+      </div>
+
+      <div class="word-list" id="word-list"></div>
+
+      <div class="panel">
+        <strong style="font-size:20px;">저장하기</strong>
+        <p class="note" style="text-align:left; margin:0;">
+          기록은 이 기기에 저장돼요. 다른 기기에서도 이어 하려면 저장 파일을 내보낸 다음, 그 기기에서 불러오면 돼요.
+        </p>
+        <div class="tools">
+          <button class="big-btn ghost" id="btn-export">저장 파일 내보내기</button>
+          <button class="big-btn ghost" id="btn-import">저장 파일 불러오기</button>
+        </div>
+        <input type="file" id="file-input" accept="application/json,.json" class="hidden">
+        <p class="note" id="io-msg" style="margin:0;"></p>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ---------- 교과서에서 뽑은 단어 (Lesson 7 + Special Lesson 3) ---------- */
+  // ex[0] 은 게임 문제에도 쓰이므로 단어끼리 절대 겹치면 안 된다.
+  // (겹치면 "Is this your ___?" 하나에 정답이 여러 개가 되어 억울하게 틀린다)
+  var WORDS = [
+    // 의복
+    { en: "jacket", ko: "재킷", cat: "clothes", ex: [
+      { s: "Is this your ___?",   ko: "이거 네 재킷이야?" },
+      { s: "My ___ is red.",      ko: "내 재킷은 빨간색이야." },
+      { s: "I like this ___.",    ko: "나는 이 재킷이 좋아." } ] },
+    { en: "coat", ko: "코트", cat: "clothes", ex: [
+      { s: "My ___ is brown.",     ko: "내 코트는 갈색이야." },
+      { s: "Is this your ___?",    ko: "이거 네 코트야?" },
+      { s: "The ___ is very warm.", ko: "그 코트는 아주 따뜻해." } ] },
+    { en: "belt", ko: "벨트", cat: "clothes", ex: [
+      { s: "This ___ is too long.", ko: "이 벨트는 너무 길어." },
+      { s: "Is this your ___?",     ko: "이거 네 벨트야?" },
+      { s: "My ___ is black.",      ko: "내 벨트는 검은색이야." } ] },
+    { en: "dress", ko: "원피스", cat: "clothes", ex: [
+      { s: "My ___ is yellow.",  ko: "내 원피스는 노란색이야." },
+      { s: "Is this your ___?",  ko: "이거 네 원피스야?" },
+      { s: "I like your ___.",   ko: "나는 네 원피스가 마음에 들어." } ] },
+    { en: "skirt", ko: "치마", cat: "clothes", ex: [
+      { s: "My ___ is blue.",   ko: "내 치마는 파란색이야." },
+      { s: "Is this your ___?", ko: "이거 네 치마야?" },
+      { s: "Her ___ is green.", ko: "그 애의 치마는 초록색이야." } ] },
+    { en: "T-shirt", ko: "티셔츠", cat: "clothes", ex: [
+      { s: "This is my ___.",   ko: "이건 내 티셔츠야." },
+      { s: "My ___ is green.",  ko: "내 티셔츠는 초록색이야." },
+      { s: "Is this your ___?", ko: "이거 네 티셔츠야?" } ] },
+    { en: "cap", ko: "모자", cat: "clothes", ex: [
+      { s: "Oh, it's my ___!",            ko: "아, 내 모자다!" },
+      { s: "My ___ is red.",              ko: "내 모자는 빨간색이야." },
+      { s: "No, it isn't. My ___ is black.", ko: "아니야. 내 모자는 검은색이야." } ] },
+    // 색깔
+    { en: "red", ko: "빨간색", cat: "color", ex: [
+      { s: "My cap is ___.",   ko: "내 모자는 빨간색이야." },
+      { s: "The apple is ___.", ko: "그 사과는 빨간색이야." },
+      { s: "Mine is ___.",     ko: "내 건 빨간색이야." } ] },
+    { en: "yellow", ko: "노란색", cat: "color", ex: [
+      { s: "My jacket is ___.",   ko: "내 재킷은 노란색이야." },
+      { s: "The bus is ___.",     ko: "그 버스는 노란색이야." },
+      { s: "I like ___ flowers.", ko: "나는 노란색 꽃을 좋아해." } ] },
+    { en: "green", ko: "초록색", cat: "color", ex: [
+      { s: "My T-shirt is ___.", ko: "내 티셔츠는 초록색이야." },
+      { s: "The tree is ___.",   ko: "그 나무는 초록색이야." },
+      { s: "Her skirt is ___.",  ko: "그 애의 치마는 초록색이야." } ] },
+    { en: "blue", ko: "파란색", cat: "color", ex: [
+      { s: "The sky is ___.",   ko: "하늘은 파란색이야." },
+      { s: "My skirt is ___.",  ko: "내 치마는 파란색이야." },
+      { s: "Mine is ___, too.", ko: "내 것도 파란색이야." } ] },
+    { en: "brown", ko: "갈색", cat: "color", ex: [
+      { s: "No, mine is ___.", ko: "아니야, 내 건 갈색이야." },
+      { s: "My coat is ___.",  ko: "내 코트는 갈색이야." },
+      { s: "The bear is ___.", ko: "그 곰은 갈색이야." } ] },
+    { en: "black", ko: "검은색", cat: "color", ex: [
+      { s: "Mine is ___.",    ko: "내 건 검은색이야." },
+      { s: "My belt is ___.", ko: "내 벨트는 검은색이야." },
+      { s: "The cat is ___.", ko: "그 고양이는 검은색이야." } ] },
+    // 파닉스 -ine / -ike
+    { en: "mine", ko: "내 것", cat: "phonics", ex: [
+      { s: "No, it isn't. ___ is black.", ko: "아니야. 내 건 검은색이야." },
+      { s: "This cap is ___.",            ko: "이 모자는 내 거야." },
+      { s: "___ is blue, too.",           ko: "내 것도 파란색이야." } ] },
+    { en: "nine", ko: "아홉", cat: "phonics", ex: [
+      { s: "___ boys like the bike.", ko: "남자아이 아홉 명이 그 자전거를 좋아해." },
+      { s: "I have ___ pencils.",     ko: "나는 연필이 아홉 자루 있어." },
+      { s: "She is ___ years old.",   ko: "그 애는 아홉 살이야." } ] },
+    { en: "bike", ko: "자전거", cat: "phonics", ex: [
+      { s: "I ride my ___ every day.", ko: "나는 매일 내 자전거를 타." },
+      { s: "Nine boys like the ___.",  ko: "아홉 명의 남자아이가 그 자전거를 좋아해." },
+      { s: "My ___ is new.",           ko: "내 자전거는 새 거야." } ] },
+    { en: "like", ko: "좋아하다", cat: "phonics", ex: [
+      { s: "Nine boys ___ the bike.", ko: "아홉 명의 남자아이가 그 자전거를 좋아해." },
+      { s: "I ___ your cap.",         ko: "나는 네 모자가 마음에 들어." },
+      { s: "We ___ English.",         ko: "우리는 영어를 좋아해." } ] },
+    // 하루 동작
+    { en: "watch TV", ko: "텔레비전을 보다", cat: "action", ex: [
+      { s: "I ___ after dinner.",    ko: "나는 저녁 먹고 텔레비전을 봐." },
+      { s: "I ___ with my mom.",     ko: "나는 엄마랑 텔레비전을 봐." },
+      { s: "I don't ___ on Monday.", ko: "나는 월요일에는 텔레비전을 안 봐." } ] },
+    { en: "do my homework", ko: "숙제를 하다", cat: "action", ex: [
+      { s: "I ___ at seven.",       ko: "나는 7시에 숙제를 해." },
+      { s: "I ___ after school.",   ko: "나는 학교 끝나고 숙제를 해." },
+      { s: "I ___ in my room.",     ko: "나는 내 방에서 숙제를 해." } ] },
+    { en: "pick up trash", ko: "쓰레기를 줍다", cat: "action", ex: [
+      { s: "I ___ in the park.",   ko: "나는 공원에서 쓰레기를 주워." },
+      { s: "We ___ on Sunday.",    ko: "우리는 일요일에 쓰레기를 주워." },
+      { s: "Let's ___ together.",  ko: "같이 쓰레기 줍자." } ] },
+    { en: "draw a picture", ko: "그림을 그리다", cat: "action", ex: [
+      { s: "I ___ with crayons.",   ko: "나는 크레파스로 그림을 그려." },
+      { s: "I ___ every evening.",  ko: "나는 저녁마다 그림을 그려." },
+      { s: "I ___ in my notebook.", ko: "나는 공책에 그림을 그려." } ] },
+    { en: "fly a drone", ko: "드론을 날리다", cat: "action", ex: [
+      { s: "I ___ on windy days.", ko: "나는 바람 부는 날 드론을 날려." },
+      { s: "I ___ in the park.",   ko: "나는 공원에서 드론을 날려." },
+      { s: "Can you ___?",         ko: "너 드론 날릴 수 있어?" } ] },
+    { en: "read a book", ko: "책을 읽다", cat: "action", ex: [
+      { s: "I ___ before bed.",     ko: "나는 자기 전에 책을 읽어." },
+      { s: "I ___ every night.",    ko: "나는 매일 밤 책을 읽어." },
+      { s: "I ___ in the library.", ko: "나는 도서관에서 책을 읽어." } ] }
+  ];
+
+  var LESSON = "Lesson 7 · Is This Your Jacket?";
+  var KEY = "jenny-eng-word-game-v1";
+
+  var GAP = [0, 2, 5, 10, 20, 40];   // 단계별로 다시 나오기까지 기다리는 문제 수
+  var MAX_LEVEL = 5;
+
+  function today() {
+    var d = new Date();
+    return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
+  }
+  function yesterdayOf(dateStr) {
+    var p = String(dateStr).split("-");
+    var d = new Date(+p[0], +p[1] - 1, +p[2]);
+    d.setDate(d.getDate() - 1);
+    return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
+  }
+
+  /* ---------- 저장 ---------- */
+  function blank() {
+    return {
+      v: 4,
+      wrong: {},        // 틀린 단어 -> 틀린 횟수
+      levels: {},       // 단어 -> 외운 단계 1~5
+      due: {},          // 단어 -> 이 문제 번호가 지나면 다시 낸다
+      asked: 0, correct: 0, qNo: 0,
+      daily: { date: today(), done: 0, goal: 10 },
+      streak: { count: 0, last: "" }
+    };
+  }
+  var S = blank();
+
+  function load() {
+    try {
+      var raw = window.localStorage.getItem(KEY);
+      if (raw) { S = normalize(JSON.parse(raw)); }
+    } catch (e) { S = blank(); }
+  }
+  function normalize(o) {
+    var b = blank();
+    if (!o || typeof o !== "object") { return b; }
+    b.asked   = Math.max(0, parseInt(o.asked, 10) || 0);
+    b.correct = Math.max(0, parseInt(o.correct, 10) || 0);
+    b.qNo     = Math.max(0, parseInt(o.qNo, 10) || 0);
+    if (o.wrong && typeof o.wrong === "object") {
+      Object.keys(o.wrong).forEach(function (en) {
+        if (findWord(en)) { b.wrong[en] = Math.max(1, parseInt(o.wrong[en], 10) || 1); }
+      });
+    }
+    if (o.levels && typeof o.levels === "object") {
+      Object.keys(o.levels).forEach(function (en) {
+        if (!findWord(en)) { return; }
+        var lv = parseInt(o.levels[en], 10) || 1;
+        b.levels[en] = Math.min(MAX_LEVEL, Math.max(1, lv));
+      });
+    }
+    if (o.due && typeof o.due === "object") {
+      Object.keys(o.due).forEach(function (en) {
+        if (findWord(en)) { b.due[en] = Math.max(0, parseInt(o.due[en], 10) || 0); }
+      });
+    }
+    if (o.daily && typeof o.daily === "object") {
+      b.daily.date = String(o.daily.date || today());
+      b.daily.done = Math.max(0, parseInt(o.daily.done, 10) || 0);
+      b.daily.goal = Math.max(1, parseInt(o.daily.goal, 10) || 10);
+    }
+    if (o.streak && typeof o.streak === "object") {
+      b.streak.count = Math.max(0, parseInt(o.streak.count, 10) || 0);
+      b.streak.last = String(o.streak.last || "");
+    }
+    rollDay(b);
+    return b;
+  }
+
+  // 날짜가 바뀌면 오늘 기록을 새로 시작한다. 연속 일수는 어제까지 이어졌을 때만 유지된다.
+  function rollDay(st) {
+    var t = today();
+    if (st.daily.date === t) { return; }
+    st.daily.date = t;
+    st.daily.done = 0;
+    if (st.streak.last && st.streak.last !== t && st.streak.last !== yesterdayOf(t)) {
+      st.streak.count = 0;   // 하루라도 건너뛰면 처음부터
+    }
+  }
+  function save() {
+    try { window.localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* 저장 못 해도 게임은 계속 */ }
+  }
+  function findWord(en) {
+    for (var i = 0; i < WORDS.length; i++) { if (WORDS[i].en === en) { return WORDS[i]; } }
+    return null;
+  }
+
+  /* ---------- 도우미 ---------- */
+  var $ = function (id) { return document.getElementById(id); };
+
+  /* ---------- 발음 ---------- */
+  // 브라우저에 들어 있는 음성 기능을 쓴다. 받아올 파일이 없어서 태블릿에서도 그대로 된다.
+  var synth = window.speechSynthesis || null;
+  var enVoice = null;
+
+  // 목소리 후보에 점수를 매긴다. 요즘 브라우저는 같은 en-US 안에도
+  // "Online (Natural)" 같은 자연스러운 신경망 음성과 옛날식 딱딱한 음성이 섞여 있다.
+  function voiceScore(v) {
+    var name = (v.name || "").toLowerCase();
+    var lang = (v.lang || "").replace("_", "-").toLowerCase();
+    var score = 0;
+
+    if (lang === "en-us") { score += 100; }
+    else if (lang === "en-gb") { score += 80; }
+    else if (lang.indexOf("en") === 0) { score += 50; }
+    else { return -1; }   // 영어가 아니면 후보에서 뺀다
+
+    if (name.indexOf("online (natural)") !== -1 || name.indexOf("neural") !== -1) { score += 500; }
+    else if (name.indexOf("natural") !== -1) { score += 300; }
+    else if (name.indexOf("google") !== -1) { score += 200; }
+    else if (name.indexOf("premium") !== -1 || name.indexOf("enhanced") !== -1) { score += 150; }
+
+    if (name.indexOf("desktop") !== -1) { score -= 80; }  // 옛날식 SAPI 음성은 뒤로
+
+    return score;
+  }
+
+  function pickVoice() {
+    if (!synth || !synth.getVoices) { return; }
+    var voices = synth.getVoices() || [];
+    var best = null, bestScore = -1;
+    for (var i = 0; i < voices.length; i++) {
+      var sc = voiceScore(voices[i]);
+      if (sc > bestScore) { bestScore = sc; best = voices[i]; }
+    }
+    if (best) { enVoice = best; }
+  }
+  if (synth) {
+    pickVoice();
+    // 목소리 목록은 늦게 도착하는 브라우저가 많다
+    if (typeof synth.addEventListener === "function") {
+      synth.addEventListener("voiceschanged", pickVoice);
+    } else {
+      synth.onvoiceschanged = pickVoice;
+    }
+  }
+
+  function speak(text) {
+    if (!synth || !window.SpeechSynthesisUtterance) { return; }
+    try {
+      synth.cancel(); // 앞의 말이 남아 있으면 끊고 새로 읽는다
+      var u = new window.SpeechSynthesisUtterance(text);
+      u.lang = enVoice ? enVoice.lang : "en-US";
+      u.rate = 0.92;  // 너무 느리면 오히려 부자연스럽게 들려서 자연스러운 속도에 가깝게
+      u.pitch = 1;
+      if (enVoice) { u.voice = enVoice; }
+      synth.speak(u);
+    } catch (e) { /* 음성이 안 되는 기기에서도 게임은 계속 */ }
+  }
+
+  var canSpeak = !!(synth && window.SpeechSynthesisUtterance);
+
+  /* ---------- 내 목소리 녹음 ---------- */
+  var canRecord = !!(window.navigator && window.navigator.mediaDevices &&
+                     window.navigator.mediaDevices.getUserMedia && window.MediaRecorder);
+  var activeRec = null; // 한 번에 하나만 녹음한다
+
+  // 예문 하나에 붙는 녹음기: [🎤 녹음] 과 [▶️ 내 목소리]
+  function makeRecorder(what) {
+    if (!canRecord) { return null; }
+
+    var wrap = document.createElement("div");
+    wrap.className = "rec-wrap";
+
+    var micBtn = document.createElement("button");
+    micBtn.type = "button";
+    micBtn.className = "rec-btn";
+    micBtn.textContent = "🎤 녹음";
+    micBtn.setAttribute("aria-label", what + " 따라 읽고 녹음하기");
+
+    var playBtn = document.createElement("button");
+    playBtn.type = "button";
+    playBtn.className = "rec-btn play";
+    playBtn.textContent = "▶️ 내 목소리";
+    playBtn.disabled = true;
+
+    var msg = document.createElement("span");
+    msg.className = "rec-msg";
+
+    var url = null;
+    var recorder = null;
+    var chunks = [];
+
+    function stopRecording() {
+      if (recorder && recorder.state !== "inactive") { recorder.stop(); }
+    }
+
+    function finish(stream) {
+      if (stream && stream.getTracks) {
+        stream.getTracks().forEach(function (t) { t.stop(); });
+      }
+      micBtn.textContent = "🎤 다시 녹음";
+      micBtn.classList.remove("on");
+      if (activeRec === stopRecording) { activeRec = null; }
+    }
+
+    micBtn.addEventListener("click", function () {
+      if (recorder && recorder.state === "recording") { stopRecording(); return; }
+
+      // 다른 곳에서 녹음 중이면 먼저 멈춘다
+      if (activeRec) { activeRec(); }
+      msg.textContent = "";
+
+      window.navigator.mediaDevices.getUserMedia({ audio: true }).then(function (stream) {
+        chunks = [];
+        try { recorder = new window.MediaRecorder(stream); }
+        catch (e) { msg.textContent = "이 기기에서는 녹음이 안 돼요."; finish(stream); return; }
+
+        recorder.ondataavailable = function (ev) {
+          if (ev.data && ev.data.size) { chunks.push(ev.data); }
+        };
+        recorder.onstop = function () {
+          finish(stream);
+          if (!chunks.length) { msg.textContent = "소리가 안 들어갔어요. 다시 해 볼까요?"; return; }
+          if (url && window.URL && window.URL.revokeObjectURL) { window.URL.revokeObjectURL(url); }
+          url = window.URL.createObjectURL(new Blob(chunks));
+          playBtn.disabled = false;
+          msg.textContent = "녹음 끝! 눌러서 들어 보세요";
+        };
+
+        recorder.start();
+        activeRec = stopRecording;
+        micBtn.textContent = "⏹ 그만";
+        micBtn.classList.add("on");
+        msg.textContent = "녹음 중… 따라 읽어 보세요";
+      }).catch(function (err) {
+        var name = err && err.name;
+        if (name === "NotAllowedError" || name === "SecurityError") {
+          msg.textContent = "마이크를 못 써요. 마이크 사용을 허용해 주세요.";
+        } else if (name === "NotFoundError") {
+          msg.textContent = "마이크가 없어요.";
+        } else {
+          msg.textContent = "녹음을 시작하지 못했어요.";
+        }
+      });
+    });
+
+    playBtn.addEventListener("click", function () {
+      if (!url) { return; }
+      if (synth) { synth.cancel(); }
+      var audio = new window.Audio(url);
+      audio.play();
+    });
+
+    wrap.appendChild(micBtn);
+    wrap.appendChild(playBtn);
+    wrap.appendChild(msg);
+    return wrap;
+  }
+
+  // 누르면 읽어 주는 버튼. 음성이 없는 기기에서는 아예 만들지 않는다.
+  function sayButton(text, size) {
+    if (!canSpeak) { return null; }
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "say" + (size === "small" ? " small" : "");
+    b.textContent = "🔊";
+    b.setAttribute("aria-label", text + " 발음 듣기");
+    b.title = "발음 듣기";
+    b.addEventListener("click", function (ev) {
+      if (ev && ev.stopPropagation) { ev.stopPropagation(); }
+      speak(text);
+    });
+    return b;
+  }
+
+  function shuffle(a) {
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+  function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+
+  /* ---------- 문제 만들기 ---------- */
+  var current = null;
+  var lastEn = null;
+
+  // 간격 반복: 덜 외운 단어(단계가 낮은 단어)가 먼저·자주 돌아온다.
+  // 맞히면 단계가 올라가서 한참 뒤에 나오고, 틀리면 1단계로 떨어져 바로 다시 나온다.
+  function levelOf(en) { return S.levels[en] || 1; }
+
+  function nextQuestion() {
+    var ready = WORDS.filter(function (w) { return (S.due[w.en] || 0) <= S.qNo; });
+    var pool = ready.length ? ready : WORDS;
+
+    // 나올 때가 된 것들 중에서도 단계가 낮은 쪽을 먼저 (덜 외운 단어에 시간을 더 쓴다)
+    if (pool.length > 1) {
+      var lowest = Math.min.apply(null, pool.map(function (w) { return levelOf(w.en); }));
+      var weak = pool.filter(function (w) { return levelOf(w.en) <= lowest + 1; });
+      if (weak.length) { pool = weak; }
+    }
+
+    var word = pick(pool);
+    var guard = 0;
+    while (word.en === lastEn && pool.length > 1 && guard++ < 12) { word = pick(pool); }
+    lastEn = word.en;
+
+    // 홀짝으로 번갈아 → 정확히 절반씩
+    var type = (S.qNo % 2 === 0) ? "meaning" : "cloze";
+
+    var sameCat = WORDS.filter(function (w) { return w.cat === word.cat && w.en !== word.en; });
+    var others = shuffle(sameCat.slice()).slice(0, 3);
+    while (others.length < 3) {
+      var extra = pick(WORDS);
+      if (extra.en !== word.en && others.indexOf(extra) === -1) { others.push(extra); }
+    }
+    current = { word: word, type: type, options: shuffle(others.concat([word])) };
+    renderQuestion();
+  }
+
+  function renderQuestion() {
+    var w = current.word;
+    var kicker = $("q-kicker");
+    var body = $("q-body");
+    var choices = $("q-choices");
+
+    $("q-verdict").innerHTML = "";
+    $("q-drills").innerHTML = "";
+    $("btn-next").classList.add("hidden");
+    body.innerHTML = "";
+    choices.innerHTML = "";
+
+    // 문제 유형 이름 대신 단원 이름을 띄운다 (제니 지시 8/3).
+    // 유형은 harness 와 코드에서 data-qtype 으로 구분한다.
+    body.setAttribute("data-qtype", current.type);
+
+    if (current.type === "meaning") {
+      kicker.textContent = LESSON;
+      kicker.className = "kicker";
+      var big = document.createElement("p");
+      big.className = "prompt-word";
+      var bigNo = document.createElement("span");
+      bigNo.className = "word-no big";
+      bigNo.textContent = "1.";
+      big.appendChild(bigNo);
+      var bigEn = document.createElement("span");
+      bigEn.className = "prompt-en";
+      bigEn.textContent = w.en;
+      big.appendChild(bigEn);
+      var sub = document.createElement("p");
+      sub.className = "prompt-sub";
+      sub.textContent = "무슨 뜻일까?";
+      // 아래 목록과 같은 모양: 번호 · 단어 · 스피커가 한 줄에 나란히
+      var say = sayButton(w.en);
+      if (say) { big.appendChild(say); }
+      body.appendChild(big);
+      body.appendChild(sub);
+    } else {
+      kicker.textContent = LESSON;
+      kicker.className = "kicker cloze";
+      var p = document.createElement("p");
+      p.className = "sentence";
+      var parts = w.ex[0].s.split("___");
+      p.appendChild(document.createTextNode(parts[0]));
+      var b = document.createElement("span");
+      b.className = "blank";
+      b.setAttribute("aria-label", "빈칸");
+      p.appendChild(b);
+      p.appendChild(document.createTextNode(parts[1] || ""));
+      var ko = document.createElement("p");
+      ko.className = "prompt-sub";
+      ko.textContent = w.ex[0].ko;
+      body.appendChild(p);
+      body.appendChild(ko);
+
+      // 빈칸 문제는 고르지 않고 직접 타이핑해서 외운다
+      var fillWrap = document.createElement("div");
+      fillWrap.className = "fill-wrap";
+
+      var input = document.createElement("input");
+      input.type = "text";
+      input.id = "fill-input";
+      input.className = "fill-input";
+      input.setAttribute("autocomplete", "off");
+      input.setAttribute("autocapitalize", "off");
+      input.setAttribute("autocorrect", "off");
+      input.spellcheck = false;
+      input.placeholder = "빈칸에 들어갈 단어";
+      input.setAttribute("aria-label", "빈칸에 들어갈 영어 단어 입력");
+      input.addEventListener("keydown", function (ev) {
+        if (ev.key === "Enter") { submitTyped(); }
+      });
+
+      var submitBtn = document.createElement("button");
+      submitBtn.type = "button";
+      submitBtn.id = "fill-submit";
+      submitBtn.className = "fill-submit";
+      submitBtn.textContent = "확인";
+      submitBtn.addEventListener("click", submitTyped);
+
+      fillWrap.appendChild(input);
+      fillWrap.appendChild(submitBtn);
+      body.appendChild(fillWrap);
+      input.focus();
+    }
+
+    if (current.type === "meaning") {
+      current.options.forEach(function (opt) {
+        var btn = document.createElement("button");
+        btn.className = "choice";
+        btn.type = "button";
+        btn.textContent = opt.ko;
+        btn.addEventListener("click", function () { answer(opt, btn); });
+        choices.appendChild(btn);
+      });
+    }
+  }
+
+  function answer(opt, btn) {
+    var w = current.word;
+    var correct = (opt.en === w.en);
+    var all = $("q-choices").querySelectorAll(".choice");
+
+    for (var i = 0; i < all.length; i++) { all[i].disabled = true; }
+    btn.classList.add(correct ? "right" : "wrong");
+
+    if (!correct) {
+      for (var j = 0; j < all.length; j++) {
+        if (all[j].textContent === w.ko) { all[j].classList.add("right"); }
+      }
+    }
+
+    grade(w, correct);
+  }
+
+  // 빈칸 문제: 고르지 않고 직접 쓴 철자를 채점한다
+  function submitTyped() {
+    var input = $("fill-input");
+    var submitBtn = $("fill-submit");
+    if (!input || input.disabled) { return; }
+
+    var typed = input.value.trim();
+    if (!typed) { input.focus(); return; }
+
+    var w = current.word;
+    var correct = typed.toLowerCase() === w.en.toLowerCase();
+
+    input.disabled = true;
+    submitBtn.disabled = true;
+    input.classList.add(correct ? "right" : "wrong");
+
+    grade(w, correct);
+  }
+
+  function grade(w, correct) {
+    S.asked += 1;
+    S.qNo += 1;
+    rollDay(S);
+    S.daily.done += 1;
+
+    var v = $("q-verdict");
+    v.className = "verdict " + (correct ? "ok" : "no");
+
+    if (correct) {
+      S.correct += 1;
+      if (S.wrong[w.en]) { delete S.wrong[w.en]; }
+      S.levels[w.en] = Math.min(MAX_LEVEL, levelOf(w.en) + 1);
+      v.innerHTML = "<span>잘했어! 맞힌 개수 " + S.correct + "개</span>" +
+                    "<small>" + esc(w.en) + " = " + esc(w.ko) +
+                    " · 외운 단계 " + S.levels[w.en] + "/" + MAX_LEVEL + "</small>";
+    } else {
+      S.wrong[w.en] = (S.wrong[w.en] || 0) + 1;
+      S.levels[w.en] = 1;   // 틀리면 처음부터 다시
+      v.innerHTML = "<span>아쉬워! 정답은 <b>" + esc(current.type === "meaning" ? w.ko : w.en) + "</b></span>" +
+                    "<small>" + esc(w.en) + " = " + esc(w.ko) + " · 내 단어장에 넣어 뒀어</small>";
+    }
+
+    S.due[w.en] = S.qNo + GAP[S.levels[w.en]];
+
+    // 오늘 목표를 채운 순간에만 연속 일수를 올린다 (하루에 한 번)
+    if (S.daily.done >= S.daily.goal && S.streak.last !== S.daily.date) {
+      S.streak.count = (S.streak.last === yesterdayOf(S.daily.date)) ? S.streak.count + 1 : 1;
+      S.streak.last = S.daily.date;
+      $("goal-done").classList.remove("hidden");
+    }
+
+    // 답을 낸 뒤에는 어느 유형이든 발음을 들려준다 (빈칸 문제는 미리 들려주면 답이 새니까 여기서만)
+    var vSay = sayButton(w.en);
+    if (vSay) {
+      var vRow = document.createElement("div");
+      vRow.className = "say-row left";
+      var lab = document.createElement("span");
+      lab.className = "say-label";
+      lab.textContent = "발음 듣기";
+      vRow.appendChild(vSay);
+      vRow.appendChild(lab);
+      v.appendChild(vRow);
+    }
+
+    // 맨 위 단어도 아래 목록 단어와 똑같이 철자 연습·뜻 맞히기·예문 연습을 붙인다.
+    // 문제를 풀기 전에 보여주면 빈칸 문제의 답이 새므로 답한 뒤에만 나온다.
+    var qd = $("q-drills");
+    qd.innerHTML = "";
+    qd.appendChild(buildSpellDrill(w));
+    qd.appendChild(buildMeaningQuiz(w));
+    w.ex.forEach(function (ex, n) { qd.appendChild(buildDrill(w, ex, n + 1)); });
+
+    $("btn-next").classList.remove("hidden");
+    $("btn-next").focus();
+    save();
+    renderStatus();
+    renderBook();
+  }
+
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c];
+    });
+  }
+
+  /* ---------- 상태 / 카드 ---------- */
+  function renderStatus() {
+    rollDay(S);
+    var done = Math.min(S.daily.done, S.daily.goal);
+
+    $("coin-text").textContent = "맞힌 개수 " + S.correct + "개";
+    $("chip-score").textContent = "푼 문제 " + S.asked;
+    $("chip-streak").textContent = "🔥 " + S.streak.count + "일 연속";
+    $("goal-bar").style.width = (done / S.daily.goal) * 100 + "%";
+    $("goal-note").textContent = "오늘 " + S.daily.done + " / " + S.daily.goal + "문제";
+    $("goal-done").classList.toggle("hidden", S.daily.done < S.daily.goal);
+    $("book-count").textContent = Object.keys(S.wrong).length;
+  }
+
+  /* ---------- 말한 걸 알아듣고 채점하기 ---------- */
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition || null;
+  var canListen = !!SR;
+
+  function normalizeSpeech(s) {
+    return String(s).toLowerCase().replace(/[^a-z0-9' ]/g, " ").replace(/\s+/g, " ").trim();
+  }
+  // 목표 문장의 단어 중 몇 개를 말했는지 (0~1). 순서가 조금 틀려도 인정한다.
+  function scoreSpeech(said, target) {
+    var a = normalizeSpeech(said).split(" ").filter(Boolean);
+    var b = normalizeSpeech(target).split(" ").filter(Boolean);
+    if (!b.length) { return 0; }
+    var pool = a.slice(), hit = 0;
+    b.forEach(function (word) {
+      var i = pool.indexOf(word);
+      if (i !== -1) { pool.splice(i, 1); hit += 1; }
+    });
+    return hit / b.length;
+  }
+
+  function makeListener(target) {
+    if (!canListen) { return null; }
+
+    var wrap = document.createElement("div");
+    wrap.className = "rec-wrap";
+
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "rec-btn listen";
+    btn.textContent = "🗣 말해보기";
+    btn.setAttribute("aria-label", target + " 소리 내어 말하고 채점받기");
+
+    var msg = document.createElement("span");
+    msg.className = "rec-msg";
+
+    var running = false;
+
+    btn.addEventListener("click", function () {
+      if (running) { return; }
+      var rec;
+      try { rec = new SR(); } catch (e) { msg.textContent = "이 기기에서는 안 돼요."; return; }
+
+      rec.lang = "en-US";
+      rec.interimResults = false;
+      rec.maxAlternatives = 3;
+
+      rec.onresult = function (ev) {
+        var best = 0, heard = "";
+        var alts = ev.results && ev.results[0] ? ev.results[0] : [];
+        for (var i = 0; i < alts.length; i++) {
+          var t = alts[i].transcript || "";
+          var sc = scoreSpeech(t, target);
+          if (sc >= best) { best = sc; heard = t; }
+        }
+        if (best >= 0.9) {
+          msg.textContent = "딩동댕! 잘 말했어요 🎉";
+          msg.className = "rec-msg good";
+        } else if (best >= 0.6) {
+          msg.textContent = "거의 다 됐어요! 들린 말: " + heard;
+          msg.className = "rec-msg soso";
+        } else {
+          msg.textContent = "다시 해 볼까요? 들린 말: " + (heard || "(못 들었어요)");
+          msg.className = "rec-msg";
+        }
+      };
+      rec.onerror = function (ev) {
+        var err = ev && ev.error;
+        if (err === "not-allowed" || err === "service-not-allowed") {
+          msg.textContent = "마이크를 못 써요. 마이크 사용을 허용해 주세요.";
+        } else if (err === "no-speech") {
+          msg.textContent = "소리가 안 들렸어요. 다시 말해 볼까요?";
+        } else {
+          msg.textContent = "잘 못 알아들었어요. 다시 해 볼까요?";
+        }
+        msg.className = "rec-msg";
+      };
+      rec.onend = function () {
+        running = false;
+        btn.textContent = "🗣 말해보기";
+        btn.classList.remove("on");
+      };
+
+      try {
+        if (synth) { synth.cancel(); }
+        rec.start();
+        running = true;
+        btn.textContent = "👂 듣는 중…";
+        btn.classList.add("on");
+        msg.textContent = "지금 말해 보세요";
+        msg.className = "rec-msg";
+      } catch (e) {
+        running = false;
+        msg.textContent = "듣기를 시작하지 못했어요.";
+      }
+    });
+
+    wrap.appendChild(btn);
+    wrap.appendChild(msg);
+    return wrap;
+  }
+
+  /* ---------- 단어장 연습 문제 ---------- */
+  // 예문 하나로 만드는 연습: 먼저 통문장을 다 보여주고,
+  // 그다음 그 문장의 단어 개수만큼 한 단어씩 빼서 문제를 낸다.
+  // 토큰에서 앞뒤 문장부호를 떼어 낸다 ("red." -> {lead:"", core:"red", trail:"."})
+  function splitToken(tok) {
+    var m = tok.match(/^([^A-Za-z0-9']*)([A-Za-z0-9'’\-]+)([^A-Za-z0-9']*)$/);
+    return m ? { lead: m[1], core: m[2], trail: m[3] } : { lead: "", core: tok, trail: "" };
+  }
+
+  // 목표 단어가 문장에서 몇 번째 토큰부터 몇 개를 차지하는지
+  function targetSpan(w, ex) {
+    var before = ex.s.split("___")[0].trim();
+    var start = before ? before.split(/\s+/).length : 0;
+    return { start: start, len: w.en.split(" ").length };
+  }
+
+  // ① 점점 사라지는 문장: 1단계 전체 -> 2단계 목표 단어 -> 3단계 절반 -> 4단계 전부
+  function maskStage(tokens, span, stage) {
+    return tokens.map(function (tok, i) {
+      var inTarget = (i >= span.start && i < span.start + span.len);
+      var hide =
+        (stage === 2 && inTarget) ||
+        (stage === 3 && (inTarget || i % 2 === 0)) ||
+        (stage === 4);
+      if (!hide) { return tok; }
+      var p = splitToken(tok);
+      return p.lead + "____" + p.trail;
+    }).join(" ");
+  }
+
+  function buildDrill(w, ex, no) {
+    var full = ex.s.replace("___", w.en);
+    var tokens = full.split(" ");
+    var span = targetSpan(w, ex);
+
+    var box = document.createElement("div");
+    box.className = "drill";
+
+    var head = document.createElement("div");
+    head.className = "drill-head";
+    head.textContent = "예문 " + no;
+    box.appendChild(head);
+
+    /* --- 탭 --- */
+    var tabRow = document.createElement("div");
+    tabRow.className = "mini-tabs";
+    var panes = {};
+    var names = [["read", "읽기"], ["blank", "빈칸"], ["speak", "말하기"], ["order", "순서"]];
+    var tabBtns = {};
+
+    names.forEach(function (pair) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "mini-tab";
+      b.textContent = pair[1];
+      b.setAttribute("aria-pressed", String(pair[0] === "read"));
+      b.addEventListener("click", function () {
+        names.forEach(function (p2) {
+          tabBtns[p2[0]].setAttribute("aria-pressed", String(p2[0] === pair[0]));
+          panes[p2[0]].classList.toggle("hidden", p2[0] !== pair[0]);
+        });
+      });
+      tabBtns[pair[0]] = b;
+      tabRow.appendChild(b);
+    });
+    box.appendChild(tabRow);
+
+    /* --- 읽기: 점점 사라지는 문장 --- */
+    var readPane = document.createElement("div");
+    readPane.className = "pane";
+
+    var stageRow = document.createElement("div");
+    stageRow.className = "stage-row";
+
+    var line = document.createElement("p");
+    line.className = "drill-full";
+    line.textContent = full;
+
+    var stageBtns = [];
+    [1, 2, 3, 4].forEach(function (st) {
+      var sb = document.createElement("button");
+      sb.type = "button";
+      sb.className = "stage-btn";
+      sb.textContent = st + "단계";
+      sb.setAttribute("aria-pressed", String(st === 1));
+      sb.addEventListener("click", function () {
+        line.textContent = maskStage(tokens, span, st);
+        stageBtns.forEach(function (o, k) { o.setAttribute("aria-pressed", String(k + 1 === st)); });
+      });
+      stageBtns.push(sb);
+      stageRow.appendChild(sb);
+    });
+
+    var lineRow = document.createElement("div");
+    lineRow.className = "drill-line";
+    lineRow.appendChild(line);
+    var saySent = sayButton(full, "small");
+    if (saySent) { lineRow.appendChild(saySent); }
+
+    var ko = document.createElement("p");
+    ko.className = "drill-ko";
+    ko.textContent = ex.ko;
+
+    var tip = document.createElement("p");
+    tip.className = "stage-tip";
+    tip.textContent = "4단계까지 가면 안 보고 말할 수 있어요";
+
+    readPane.appendChild(stageRow);
+    readPane.appendChild(lineRow);
+    readPane.appendChild(ko);
+    readPane.appendChild(tip);
+    panes.read = readPane;
+    box.appendChild(readPane);
+
+    /* --- 빈칸: 한 단어씩 빼기 --- */
+    var blankPane = document.createElement("div");
+    blankPane.className = "pane hidden";
+
+    var bKo = document.createElement("p");
+    bKo.className = "drill-ko";
+    bKo.textContent = ex.ko;
+    blankPane.appendChild(bKo);
+
+    tokens.forEach(function (tok, i) {
+      var p = splitToken(tok);
+      var shown = tokens.slice();
+      shown[i] = p.lead + "____" + p.trail;
+
+      var row = document.createElement("button");
+      row.className = "q-row";
+      row.type = "button";
+      row.setAttribute("aria-label", (i + 1) + "번 문제, 눌러서 정답 보기");
+
+      var num = document.createElement("span");
+      num.className = "q-no";
+      num.textContent = String(i + 1);
+
+      var txt = document.createElement("span");
+      txt.className = "q-txt";
+      txt.textContent = shown.join(" ");
+
+      var ans = document.createElement("span");
+      ans.className = "q-ans";
+      ans.textContent = p.core;
+
+      row.appendChild(num);
+      row.appendChild(txt);
+      row.appendChild(ans);
+      row.addEventListener("click", function () { row.classList.toggle("open"); });
+
+      var qLine = document.createElement("div");
+      qLine.className = "q-line";
+      qLine.appendChild(row);
+      var saySmall = sayButton(full, "small");
+      if (saySmall) { qLine.appendChild(saySmall); }
+      blankPane.appendChild(qLine);
+    });
+    panes.blank = blankPane;
+    box.appendChild(blankPane);
+
+    /* --- 말하기: 듣기 → 녹음 → 채점 --- */
+    var speakPane = document.createElement("div");
+    speakPane.className = "pane hidden";
+
+    var sLine = document.createElement("p");
+    sLine.className = "drill-full";
+    sLine.textContent = full;
+    var sRow = document.createElement("div");
+    sRow.className = "drill-line";
+    sRow.appendChild(sLine);
+    var sSay = sayButton(full, "small");
+    if (sSay) { sRow.appendChild(sSay); }
+    speakPane.appendChild(sRow);
+
+    var sKo = document.createElement("p");
+    sKo.className = "drill-ko";
+    sKo.textContent = ex.ko;
+    speakPane.appendChild(sKo);
+
+    var listener = makeListener(full);
+    if (listener) { speakPane.appendChild(listener); }
+    var rec = makeRecorder(full);
+    if (rec) { speakPane.appendChild(rec); }
+    if (!listener && !rec) {
+      var noMic = document.createElement("p");
+      noMic.className = "drill-ko";
+      noMic.textContent = "이 기기에서는 녹음과 말하기 채점을 쓸 수 없어요.";
+      speakPane.appendChild(noMic);
+    }
+    panes.speak = speakPane;
+    box.appendChild(speakPane);
+
+    /* --- 순서: 단어를 순서대로 눌러 문장 만들기 --- */
+    var orderPane = document.createElement("div");
+    orderPane.className = "pane hidden";
+    orderPane.appendChild(buildOrderGame(tokens, ex.ko));
+    panes.order = orderPane;
+    box.appendChild(orderPane);
+
+    return box;
+  }
+
+  // ④ 문장 만들기: 섞인 단어를 순서대로 눌러 문장을 완성한다
+  function buildOrderGame(tokens, koText) {
+    var wrap = document.createElement("div");
+    wrap.className = "order-wrap";
+
+    var hint = document.createElement("p");
+    hint.className = "drill-ko";
+    hint.textContent = koText;
+
+    var made = document.createElement("p");
+    made.className = "order-made";
+
+    var bank = document.createElement("div");
+    bank.className = "order-bank";
+
+    var msg = document.createElement("p");
+    msg.className = "rec-msg";
+
+    var placed = [];
+
+    function refresh() {
+      made.textContent = placed.length ? placed.join(" ") : "여기에 문장이 만들어져요";
+      made.classList.toggle("empty", placed.length === 0);
+      if (placed.length === tokens.length) {
+        var ok = placed.join(" ") === tokens.join(" ");
+        msg.textContent = ok ? "딩동댕! 문장을 다 만들었어요 🎉" : "순서가 조금 달라요. 되돌리기로 고쳐 볼까요?";
+        msg.className = "rec-msg " + (ok ? "good" : "soso");
+      } else {
+        msg.textContent = "";
+        msg.className = "rec-msg";
+      }
+    }
+
+    function build() {
+      bank.innerHTML = "";
+      var left = tokens.slice();
+      placed.forEach(function (t) {
+        var i = left.indexOf(t);
+        if (i !== -1) { left.splice(i, 1); }
+      });
+      shuffle(left).forEach(function (t) {
+        var b = document.createElement("button");
+        b.type = "button";
+        b.className = "order-chip";
+        b.textContent = t;
+        b.addEventListener("click", function () { placed.push(t); build(); refresh(); });
+        bank.appendChild(b);
+      });
+    }
+
+    var undo = document.createElement("button");
+    undo.type = "button";
+    undo.className = "rec-btn";
+    undo.textContent = "↩️ 되돌리기";
+    undo.addEventListener("click", function () {
+      if (!placed.length) { return; }
+      placed.pop();
+      build();
+      refresh();
+    });
+
+    var reset = document.createElement("button");
+    reset.type = "button";
+    reset.className = "rec-btn";
+    reset.textContent = "🔄 처음부터";
+    reset.addEventListener("click", function () { placed = []; build(); refresh(); });
+
+    var tools = document.createElement("div");
+    tools.className = "rec-wrap";
+    tools.appendChild(undo);
+    tools.appendChild(reset);
+
+    wrap.appendChild(hint);
+    wrap.appendChild(made);
+    wrap.appendChild(bank);
+    wrap.appendChild(tools);
+    wrap.appendChild(msg);
+
+    build();
+    refresh();
+    return wrap;
+  }
+
+  // 단어마다 붙는 철자 빈칸 연습. 한 번에 딱 한 글자만 빈칸이고 나머지는 그대로 보인다.
+  // 맞히면 그 글자는 그대로 보이게 남고, 빈칸이 다음 글자로 옮겨간다 (jacket -> _acket -> j_cket -> ja_ket ...).
+  function buildSpellDrill(w) {
+    var box = document.createElement("div");
+    box.className = "spell-box";
+
+    var ask = document.createElement("p");
+    ask.className = "spell-ask";
+    ask.textContent = "빈칸 글자를 하나씩 채워 보자";
+
+    var lettersWrap = document.createElement("div");
+    lettersWrap.className = "spell-letters";
+
+    var slots = [];       // 화면에 보이는 칸 전부 (스페이스 자리는 el 없음)
+    w.en.split("").forEach(function (ch) {
+      if (ch === " ") {
+        var gap = document.createElement("span");
+        gap.className = "spell-gap";
+        lettersWrap.appendChild(gap);
+        slots.push({ ch: ch, el: null, isSpace: true });
+      } else {
+        var slot = document.createElement("span");
+        slot.className = "spell-slot";
+        lettersWrap.appendChild(slot);
+        slots.push({ ch: ch, el: slot, isSpace: false });
+      }
+    });
+    var letterSlots = slots.filter(function (s) { return !s.isSpace; }); // 실제로 채워야 할 글자만
+
+    var input = document.createElement("input");
+    input.type = "text";
+    input.className = "spell-hidden-input";
+    input.setAttribute("autocomplete", "off");
+    input.setAttribute("autocapitalize", "off");
+    input.setAttribute("autocorrect", "off");
+    input.spellcheck = false;
+    input.setAttribute("aria-label", w.en + " 빈칸 글자 입력");
+
+    var msg = document.createElement("p");
+    msg.className = "rec-msg";
+
+    var blankIdx = 0;   // letterSlots 중 지금 비어 있는 글자의 번호
+
+    function render() {
+      letterSlots.forEach(function (s, i) {
+        if (i === blankIdx) {
+          s.el.textContent = "";
+          s.el.classList.add("active");
+          s.el.classList.remove("filled", "done", "wrong");
+        } else if (i < blankIdx) {
+          s.el.textContent = s.ch;
+          s.el.classList.remove("active", "wrong");
+          s.el.classList.add("filled", "done");
+        } else {
+          s.el.textContent = s.ch;   // 아직 안 맞힌 글자도 미리 보여준다
+          s.el.classList.remove("active", "wrong", "done");
+          s.el.classList.add("filled");
+        }
+      });
+    }
+    function reset() {
+      blankIdx = 0;
+      input.value = "";
+      msg.textContent = "";
+      msg.className = "rec-msg";
+      render();
+    }
+    function typeChar(ch) {
+      if (blankIdx >= letterSlots.length) { return; }
+      var slot = letterSlots[blankIdx];
+      if (ch.toLowerCase() === slot.ch.toLowerCase()) {
+        blankIdx += 1;
+        render();
+        if (blankIdx >= letterSlots.length) {
+          msg.textContent = "다 썼어! 잘했어 🎉";
+          msg.className = "rec-msg good";
+        }
+      } else if (ch !== " ") {
+        slot.el.classList.add("wrong");
+        window.setTimeout(function () { slot.el.classList.remove("wrong"); }, 300);
+      }
+    }
+
+    input.addEventListener("input", function () {
+      var v = input.value;
+      input.value = "";
+      for (var i = 0; i < v.length; i++) { typeChar(v[i]); }
+    });
+
+    // 입력창을 글자 칸 전체 위에 투명하게 겹쳐 둔다 — 어디를 눌러도 그 자리가 곧 입력창이라
+    // 모바일에서도 탭하면 바로 키보드가 뜬다 (별도 focus() 위임에 기대지 않는다).
+    lettersWrap.appendChild(input);
+
+    var resetBtn = document.createElement("button");
+    resetBtn.type = "button";
+    resetBtn.className = "rec-btn";
+    resetBtn.textContent = "🔄 다시 쓰기";
+    resetBtn.addEventListener("click", reset);
+
+    var tools = document.createElement("div");
+    tools.className = "rec-wrap";
+    tools.appendChild(resetBtn);
+    var say = sayButton(w.en);
+    if (say) { tools.appendChild(say); }
+
+    box.appendChild(ask);
+    box.appendChild(lettersWrap);
+    box.appendChild(tools);
+    box.appendChild(msg);
+
+    reset();
+    return box;
+  }
+
+  // 단어마다 붙는 작은 뜻 맞히기. 답하기 전에는 뜻을 숨겨 둔다.
+  function buildMeaningQuiz(w) {
+    var box = document.createElement("div");
+    box.className = "mini-quiz";
+
+    var ask = document.createElement("p");
+    ask.className = "mini-ask";
+    ask.textContent = "무슨 뜻일까?";
+
+    var grid = document.createElement("div");
+    grid.className = "mini-grid";
+
+    var answer = document.createElement("div");
+    answer.className = "word-ko hidden";
+    answer.textContent = w.ko;
+
+    var again = document.createElement("button");
+    again.type = "button";
+    again.className = "rec-btn hidden";
+    again.textContent = "🔄 다시 풀기";
+
+    function fill() {
+      grid.innerHTML = "";
+      var same = WORDS.filter(function (o) { return o.cat === w.cat && o.en !== w.en; });
+      var opts = shuffle(same.slice()).slice(0, 3);
+      while (opts.length < 3) {
+        var extra = pick(WORDS);
+        if (extra.en !== w.en && opts.indexOf(extra) === -1) { opts.push(extra); }
+      }
+      shuffle(opts.concat([w])).forEach(function (o) {
+        var b = document.createElement("button");
+        b.type = "button";
+        b.className = "mini-choice";
+        b.textContent = o.ko;
+        b.addEventListener("click", function () {
+          var all = grid.children;
+          for (var i = 0; i < all.length; i++) {
+            all[i].disabled = true;
+            if (all[i].textContent === w.ko) { all[i].classList.add("right"); }
+          }
+          if (o.en !== w.en) { b.classList.add("wrong"); }
+          answer.classList.remove("hidden");
+          again.classList.remove("hidden");
+          ask.textContent = (o.en === w.en) ? "딩동댕! 🎉" : "아쉬워! 정답은 이거야";
+        });
+        grid.appendChild(b);
+      });
+    }
+
+    again.addEventListener("click", function () {
+      ask.textContent = "무슨 뜻일까?";
+      answer.classList.add("hidden");
+      again.classList.add("hidden");
+      fill();
+    });
+
+    fill();
+    box.appendChild(ask);
+    box.appendChild(grid);
+    box.appendChild(answer);
+    box.appendChild(again);
+    return box;
+  }
+
+  /* ---------- 단어장 ---------- */
+  var bookMode = "wrong";
+
+  // 틀린 단어가 하나도 없는데 '틀린 단어' 보기를 켜 두면 화면이 텅 빈다.
+  // 그럴 땐 전체 단어를 보여준다 (예문 연습은 틀리지 않아도 할 수 있어야 하니까).
+  function syncBookMode() {
+    if (bookMode === "wrong" && !Object.keys(S.wrong).length) { bookMode = "all"; }
+    $("seg-wrong").setAttribute("aria-pressed", String(bookMode === "wrong"));
+    $("seg-all").setAttribute("aria-pressed", String(bookMode === "all"));
+  }
+
+  function renderBook() {
+    syncBookMode();
+    var list = $("word-list");
+    var keys;
+
+    if (bookMode === "all") {
+      keys = WORDS.map(function (w) { return w.en; });
+    } else {
+      keys = Object.keys(S.wrong);
+      keys.sort(function (a, b) { return S.wrong[b] - S.wrong[a]; });
+    }
+    list.innerHTML = "";
+
+    if (!keys.length) {
+      var e = document.createElement("div");
+      e.className = "empty";
+      e.textContent = "아직 틀린 단어가 없어요. 멋진데!";
+      list.appendChild(e);
+      return;
+    }
+
+    keys.forEach(function (en, idx) {
+      var w = findWord(en);
+      if (!w) { return; }
+      var item = document.createElement("div");
+      item.className = "word-item";
+
+      var head = document.createElement("div");
+      head.className = "word-head";
+
+      var enWrap = document.createElement("div");
+      enWrap.className = "word-en-wrap";
+
+      // 맨 위 문제 단어가 1번이므로 목록은 2번부터 이어 붙인다
+      var numBadge = document.createElement("span");
+      numBadge.className = "word-no";
+      numBadge.textContent = (idx + 2) + ".";   // 맨 위 문제 단어가 1번
+      enWrap.appendChild(numBadge);
+
+      var enText = document.createElement("span");
+      enText.className = "word-en";
+      enText.textContent = w.en;
+      enWrap.appendChild(enText);
+      var sayWord = sayButton(w.en);
+      if (sayWord) { enWrap.appendChild(sayWord); }
+      head.appendChild(enWrap);
+
+      if (S.wrong[en]) {
+        var miss = document.createElement("span");
+        miss.className = "miss";
+        miss.textContent = S.wrong[en] + "번 틀림";
+        head.appendChild(miss);
+      }
+
+      var spell = buildSpellDrill(w);
+      var ko = buildMeaningQuiz(w);
+
+      var drills = document.createElement("div");
+      drills.className = "drills";
+      w.ex.forEach(function (ex, n) { drills.appendChild(buildDrill(w, ex, n + 1)); });
+
+      item.appendChild(head);
+      item.appendChild(spell);
+      item.appendChild(ko);
+      item.appendChild(drills);
+
+      if (S.wrong[en]) {
+        var btn = document.createElement("button");
+        btn.className = "big-btn ghost";
+        btn.type = "button";
+        btn.textContent = "외웠어요 ✓";
+        btn.addEventListener("click", function () {
+          delete S.wrong[en];
+          save();
+          renderBook();
+          renderStatus();
+        });
+        item.appendChild(btn);
+      }
+      list.appendChild(item);
+    });
+  }
+
+  /* ---------- 저장 파일 내보내기 / 불러오기 ---------- */
+  function setMsg(text) { $("io-msg").textContent = text || ""; }
+
+  function exportSave() {
+    var dl = window.claude && window.claude.downloads;
+    if (!dl) { setMsg("이 화면에서는 파일 내보내기를 쓸 수 없어요."); return; }
+    dl.save({ filename: "영어단어게임_저장.json", data: JSON.stringify(S) })
+      .then(function () { setMsg("저장 파일을 내보냈어요."); })
+      .catch(function (err) {
+        var code = err && err.code;
+        if (code === "declined") { setMsg("내보내기를 취소했어요."); }
+        else if (code === "rate_limited") { setMsg("잠깐 기다렸다가 다시 눌러 주세요."); }
+        else { setMsg("파일을 내보내지 못했어요."); }
+      });
+  }
+
+  function importSave(file) {
+    var reader = new FileReader();
+    reader.onload = function () {
+      try {
+        S = normalize(JSON.parse(String(reader.result)));
+        save();
+        renderStatus();
+        renderBook();
+        nextQuestion();
+        setMsg("불러왔어요! 이어서 하면 돼요.");
+      } catch (e) {
+        setMsg("이 파일은 읽을 수 없어요. 내보낸 저장 파일을 골라 주세요.");
+      }
+    };
+    reader.onerror = function () { setMsg("파일을 읽지 못했어요."); };
+    reader.readAsText(file);
+  }
+
+  function setBookMode(mode) {
+    bookMode = mode;
+    renderBook();
+  }
+
+  // 문제와 단어 외우기를 한 화면에 위아래로 둔다 (화면 전환 없음)
+
+  /* ---------- 시작 ---------- */
+  load();
+  renderStatus();
+  renderBook();
+  nextQuestion();
+
+  $("seg-wrong").addEventListener("click", function () { setBookMode("wrong"); });
+  $("seg-all").addEventListener("click", function () { setBookMode("all"); });
+  $("btn-next").addEventListener("click", nextQuestion);
+  $("btn-export").addEventListener("click", exportSave);
+  $("btn-import").addEventListener("click", function () { $("file-input").click(); });
+  $("file-input").addEventListener("change", function (ev) {
+    if (ev.target.files && ev.target.files[0]) { importSave(ev.target.files[0]); }
+    ev.target.value = "";
+  });
+
+  if (!(window.claude && window.claude.downloads)) {
+    $("btn-export").classList.add("hidden");
+  }
+})();
+</script>
+</body>
+</html>
