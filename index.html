@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>초등 영어 단어 게임 · Lesson 7</title>
+<title>초등 영어 단어 게임 · Lesson 7~8</title>
 
 <style>
   /* 크레파스 색.
@@ -744,7 +744,7 @@
         </p>
         <div class="seg" role="group" aria-label="어떤 단어를 볼까요">
           <button class="seg-btn" id="seg-wrong" aria-pressed="true">틀린 단어 <span class="count" id="book-count">0</span></button>
-          <button class="seg-btn" id="seg-all" aria-pressed="false">전체 23개</button>
+          <button class="seg-btn" id="seg-all" aria-pressed="false">전체 32개</button>
         </div>
       </div>
 
@@ -771,7 +771,7 @@
 (function () {
   "use strict";
 
-  /* ---------- 교과서에서 뽑은 단어 (Lesson 7 + Special Lesson 3) ---------- */
+  /* ---------- 교과서에서 뽑은 단어 (Lesson 7 + Special Lesson 3 + Lesson 8) ---------- */
   // ex[0] 은 게임 문제에도 쓰이므로 단어끼리 절대 겹치면 안 된다.
   // (겹치면 "Is this your ___?" 하나에 정답이 여러 개가 되어 억울하게 틀린다)
   var WORDS = [
@@ -870,7 +870,44 @@
     { en: "read a book", ko: "책을 읽다", cat: "action", ex: [
       { s: "I ___ before bed.",     ko: "나는 자기 전에 책을 읽어." },
       { s: "I ___ every night.",    ko: "나는 매일 밤 책을 읽어." },
-      { s: "I ___ in the library.", ko: "나는 도서관에서 책을 읽어." } ] }
+      { s: "I ___ in the library.", ko: "나는 도서관에서 책을 읽어." } ] },
+    // 음식 (Lesson 8)
+    { en: "curry", ko: "카레", cat: "food", lessonOrder: 2, lesson: "Lesson 8 · Do You Want Some Chicken?", ex: [
+      { s: "Do you want some ___?", ko: "카레 좀 먹을래?" },
+      { s: "I want some ___.",      ko: "나는 카레가 먹고 싶어." },
+      { s: "The ___ is hot and yummy.", ko: "그 카레는 맵고 맛있어." } ] },
+    { en: "chicken", ko: "치킨", cat: "food", lessonOrder: 2, lesson: "Lesson 8 · Do You Want Some Chicken?", ex: [
+      { s: "Do you want some ___?", ko: "치킨 좀 먹을래?" },
+      { s: "Yes, please. I like ___.", ko: "응, 좋아. 나는 치킨을 좋아해." },
+      { s: "I want some ___.",      ko: "나는 치킨이 먹고 싶어." } ] },
+    { en: "water", ko: "물", cat: "food", lessonOrder: 2, lesson: "Lesson 8 · Do You Want Some Chicken?", ex: [
+      { s: "Do you want some ___?", ko: "물 좀 마실래?" },
+      { s: "I want some ___.",      ko: "나는 물을 마시고 싶어." },
+      { s: "Can I have some ___?",  ko: "물 좀 마셔도 돼요?" } ] },
+    { en: "juice", ko: "주스", cat: "food", lessonOrder: 2, lesson: "Lesson 8 · Do You Want Some Chicken?", ex: [
+      { s: "Do you want some ___?", ko: "주스 좀 마실래?" },
+      { s: "I want some ___.",      ko: "나는 주스가 마시고 싶어." },
+      { s: "The ___ is orange juice.", ko: "그 주스는 오렌지 주스야." } ] },
+    { en: "milk", ko: "우유", cat: "food", lessonOrder: 2, lesson: "Lesson 8 · Do You Want Some Chicken?", ex: [
+      { s: "Do you want some ___?", ko: "우유 좀 마실래?" },
+      { s: "No, thanks. I don't like ___.", ko: "아니, 괜찮아. 나는 우유를 안 좋아해." },
+      { s: "I drink ___ every morning.", ko: "나는 매일 아침 우유를 마셔." } ] },
+    { en: "snack", ko: "간식", cat: "food", lessonOrder: 2, lesson: "Lesson 8 · Do You Want Some Chicken?", ex: [
+      { s: "Do you want some ___?", ko: "간식 좀 먹을래?" },
+      { s: "I want some ___.",      ko: "나는 간식이 먹고 싶어." },
+      { s: "The ___ is salty.",     ko: "그 간식은 짭짤해." } ] },
+    { en: "beef", ko: "소고기", cat: "food", lessonOrder: 2, lesson: "Lesson 8 · Do You Want Some Chicken?", ex: [
+      { s: "Do you want some ___?", ko: "소고기 좀 먹을래?" },
+      { s: "Yes, please. I like ___.", ko: "응, 좋아. 나는 소고기를 좋아해." },
+      { s: "I want some ___.",      ko: "나는 소고기가 먹고 싶어." } ] },
+    { en: "hamburger", ko: "햄버거", cat: "food", lessonOrder: 2, lesson: "Lesson 8 · Do You Want Some Chicken?", ex: [
+      { s: "Do you want some ___?", ko: "햄버거 좀 먹을래?" },
+      { s: "I want some ___.",      ko: "나는 햄버거가 먹고 싶어." },
+      { s: "The ___ truck is over there.", ko: "저기 햄버거 트럭이 있어." } ] },
+    { en: "spaghetti", ko: "스파게티", cat: "food", lessonOrder: 2, lesson: "Lesson 8 · Do You Want Some Chicken?", ex: [
+      { s: "Do you want some ___?", ko: "스파게티 좀 먹을래?" },
+      { s: "I want some ___.",      ko: "나는 스파게티가 먹고 싶어." },
+      { s: "My mom made ___ for dinner.", ko: "엄마가 저녁으로 스파게티를 만들어 주셨어." } ] }
   ];
 
   var LESSON = "Lesson 7 · Is This Your Jacket?";
@@ -1159,10 +1196,27 @@
   // 간격 반복: 덜 외운 단어(단계가 낮은 단어)가 먼저·자주 돌아온다.
   // 맞히면 단계가 올라가서 한참 뒤에 나오고, 틀리면 1단계로 떨어져 바로 다시 나온다.
   function levelOf(en) { return S.levels[en] || 1; }
+  function lessonOrderOf(w) { return w.lessonOrder || 1; }
+
+  // 새 레슨은 그 앞 레슨들을 한 번씩 다 맞혀야 문제에 섞여 나온다
+  // (제니 지시 8/20: 레슨 7 내용이 먼저 나오고, 다 익힌 뒤에 레슨 8이 섞이길 원함).
+  function unlockedOrder() {
+    var unlocked = 1;
+    for (var order = 2; ; order++) {
+      var prev = WORDS.filter(function (w) { return lessonOrderOf(w) < order; });
+      if (!prev.length) { break; }
+      var allLearned = prev.every(function (w) { return levelOf(w.en) >= 2; });
+      if (!allLearned) { break; }
+      unlocked = order;
+    }
+    return unlocked;
+  }
 
   function nextQuestion() {
-    var ready = WORDS.filter(function (w) { return (S.due[w.en] || 0) <= S.qNo; });
-    var pool = ready.length ? ready : WORDS;
+    var unlocked = unlockedOrder();
+    var poolBase = WORDS.filter(function (w) { return lessonOrderOf(w) <= unlocked; });
+    var ready = poolBase.filter(function (w) { return (S.due[w.en] || 0) <= S.qNo; });
+    var pool = ready.length ? ready : poolBase;
 
     // 나올 때가 된 것들 중에서도 단계가 낮은 쪽을 먼저 (덜 외운 단어에 시간을 더 쓴다)
     if (pool.length > 1) {
@@ -1179,10 +1233,10 @@
     // 홀짝으로 번갈아 → 정확히 절반씩
     var type = (S.qNo % 2 === 0) ? "meaning" : "cloze";
 
-    var sameCat = WORDS.filter(function (w) { return w.cat === word.cat && w.en !== word.en; });
+    var sameCat = poolBase.filter(function (w) { return w.cat === word.cat && w.en !== word.en; });
     var others = shuffle(sameCat.slice()).slice(0, 3);
     while (others.length < 3) {
-      var extra = pick(WORDS);
+      var extra = pick(poolBase);
       if (extra.en !== word.en && others.indexOf(extra) === -1) { others.push(extra); }
     }
     current = { word: word, type: type, options: shuffle(others.concat([word])) };
@@ -1206,7 +1260,7 @@
     body.setAttribute("data-qtype", current.type);
 
     if (current.type === "meaning") {
-      kicker.textContent = LESSON;
+      kicker.textContent = w.lesson || LESSON;
       kicker.className = "kicker";
       var big = document.createElement("p");
       big.className = "prompt-word";
@@ -1227,7 +1281,7 @@
       body.appendChild(big);
       body.appendChild(sub);
     } else {
-      kicker.textContent = LESSON;
+      kicker.textContent = w.lesson || LESSON;
       kicker.className = "kicker cloze";
       var p = document.createElement("p");
       p.className = "sentence";
