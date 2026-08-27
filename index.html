@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -602,6 +602,49 @@
   .seg-btn[aria-pressed="true"] { background: var(--blue); color: var(--on-cool); }
   .seg-btn:focus-visible { outline: 4px solid var(--orange); outline-offset: 3px; }
 
+  /* 단어 찾기 */
+  .search-row { display: flex; gap: 8px; margin-top: 10px; }
+  .search-input {
+    font: inherit;
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: 20px;
+    font-weight: 800;
+    min-height: 50px;
+    padding: 8px 14px;
+    border: 3px solid var(--line);
+    border-radius: 12px;
+    background: var(--card);
+    color: var(--word);
+  }
+  .search-input::placeholder { color: var(--ink-soft); font-weight: 600; font-size: 17px; }
+  .search-input:focus-visible { outline: 4px solid var(--blue); outline-offset: 2px; }
+  .search-input::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; }
+  .search-clear {
+    font: inherit;
+    font-size: 20px;
+    font-weight: 800;
+    min-width: 54px;
+    border: 3px solid var(--line);
+    border-radius: 12px;
+    background: var(--tab-off);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .search-clear:focus-visible { outline: 4px solid var(--orange); outline-offset: 3px; }
+  .search-msg { font-weight: 700; }
+  .search-msg:empty { display: none; }
+  .why-hit {
+    font-size: 14px;
+    font-weight: 700;
+    padding: 2px 10px;
+    border: 2px dashed var(--line);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--ink-soft);
+    white-space: nowrap;
+  }
+
   /* ---- 단어장 연습 문제 ---- */
   .drills { display: flex; flex-direction: column; gap: 14px; margin-top: 4px; }
 
@@ -746,6 +789,13 @@
           <button class="seg-btn" id="seg-wrong" aria-pressed="true">틀린 단어 <span class="count" id="book-count">0</span></button>
           <button class="seg-btn" id="seg-all" aria-pressed="false">전체 32개</button>
         </div>
+        <div class="search-row">
+          <input class="search-input" id="word-search" type="search" inputmode="search"
+                 placeholder="찾을 단어 (jacket, 재킷 …)" aria-label="연습할 단어 찾기"
+                 autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+          <button class="search-clear hidden" id="search-clear" type="button" aria-label="찾기 그만두기">✕</button>
+        </div>
+        <p class="note search-msg" id="search-msg" style="text-align:left; margin:0;"></p>
       </div>
 
       <div class="word-list" id="word-list"></div>
@@ -2032,12 +2082,51 @@
     $("seg-all").setAttribute("aria-pressed", String(bookMode === "all"));
   }
 
+  /* ---------- 단어 찾기 ----------
+     제니 지시 8/27: 원하는 단어를 찾아서 다시 연습할 수 있게.
+     영어 철자, 한글 뜻, 예문(영어·한글) 어디에 걸려도 찾아준다.
+     띄어쓰기는 무시하고 비교하므로 "재 킷"으로 쳐도 찾아진다. */
+  var bookQuery = "";
+
+  function normSearch(s) { return String(s == null ? "" : s).toLowerCase().replace(/\s+/g, ""); }
+
+  // 얼마나 잘 맞는지 점수를 매긴다. 찾는 단어가 예문에 걸린 다른 단어보다
+  // 항상 위에 오게 하려는 것 ("jacket"을 찾았는데 yellow가 먼저 나오면 안 되니까).
+  //   3 = 영어 철자가 그것으로 시작   2 = 철자나 뜻 안에 들어 있음
+  //   1 = 예문에만 나옴              0 = 못 찾음
+  function matchRank(w, q) {
+    var en = normSearch(w.en);
+    if (en === q || en.indexOf(q) === 0) { return 3; }
+    if (en.indexOf(q) !== -1 || normSearch(w.ko).indexOf(q) !== -1) { return 2; }
+    var inEx = (w.ex || []).some(function (ex) {
+      return normSearch(ex.s).indexOf(q) !== -1 || normSearch(ex.ko).indexOf(q) !== -1;
+    });
+    return inEx ? 1 : 0;
+  }
+
   function renderBook() {
     syncBookMode();
     var list = $("word-list");
     var keys;
 
-    if (bookMode === "all") {
+    var q = normSearch(bookQuery);
+    var searching = q.length > 0;
+    var exOnly = {};   // 예문에만 나온 단어 — 왜 떴는지 알려주려고 표시해 둔다
+
+    if (searching) {
+      // 찾는 중에는 틀린 단어/전체 구분을 무시하고 모든 단어에서 찾는다.
+      // 한 번도 틀린 적 없는 단어도 다시 연습하고 싶을 수 있으니까.
+      var hits = [];
+      WORDS.forEach(function (w, i) {
+        var r = matchRank(w, q);
+        if (r) { hits.push({ en: w.en, rank: r, i: i }); }
+      });
+      // 잘 맞는 것부터. 점수가 같으면 원래 순서대로.
+      hits.sort(function (a, b) { return (b.rank - a.rank) || (a.i - b.i); });
+      exOnly = {};
+      hits.forEach(function (h) { if (h.rank === 1) { exOnly[h.en] = true; } });
+      keys = hits.map(function (h) { return h.en; });
+    } else if (bookMode === "all") {
       keys = WORDS.map(function (w) { return w.en; });
     } else {
       keys = Object.keys(S.wrong);
@@ -2045,10 +2134,21 @@
     }
     list.innerHTML = "";
 
+    var msg = $("search-msg");
+    var clearBtn = $("search-clear");
+    if (msg) {
+      msg.textContent = searching
+        ? (keys.length ? "찾은 단어 " + keys.length + "개" : "")
+        : "";
+    }
+    if (clearBtn) { clearBtn.classList.toggle("hidden", !searching); }
+
     if (!keys.length) {
       var e = document.createElement("div");
       e.className = "empty";
-      e.textContent = "아직 틀린 단어가 없어요. 멋진데!";
+      e.textContent = searching
+        ? "그런 단어는 아직 없어요. 철자를 다시 볼까요?"
+        : "아직 틀린 단어가 없어요. 멋진데!";
       list.appendChild(e);
       return;
     }
@@ -2065,11 +2165,14 @@
       var enWrap = document.createElement("div");
       enWrap.className = "word-en-wrap";
 
-      // 맨 위 문제 단어가 1번이므로 목록은 2번부터 이어 붙인다
-      var numBadge = document.createElement("span");
-      numBadge.className = "word-no";
-      numBadge.textContent = (idx + 2) + ".";   // 맨 위 문제 단어가 1번
-      enWrap.appendChild(numBadge);
+      // 맨 위 문제 단어가 1번이므로 목록은 2번부터 이어 붙인다.
+      // 찾는 중에는 목록 속 순서라는 뜻이 사라지니 번호를 빼둔다.
+      if (!searching) {
+        var numBadge = document.createElement("span");
+        numBadge.className = "word-no";
+        numBadge.textContent = (idx + 2) + ".";   // 맨 위 문제 단어가 1번
+        enWrap.appendChild(numBadge);
+      }
 
       var enText = document.createElement("span");
       enText.className = "word-en";
@@ -2084,6 +2187,14 @@
         miss.className = "miss";
         miss.textContent = S.wrong[en] + "번 틀림";
         head.appendChild(miss);
+      }
+
+      // 이 단어 자체가 아니라 예문에 찾는 말이 들어 있어서 뜬 경우
+      if (exOnly[en]) {
+        var why = document.createElement("span");
+        why.className = "why-hit";
+        why.textContent = "예문에 나와요";
+        head.appendChild(why);
       }
 
       var spell = buildSpellDrill(w);
@@ -2151,7 +2262,15 @@
 
   function setBookMode(mode) {
     bookMode = mode;
+    // 틀린 단어/전체를 누르면 찾던 것을 놓아준다 (안 그러면 눌러도 목록이 안 바뀌어 보인다)
+    setSearch("");
     renderBook();
+  }
+
+  function setSearch(text) {
+    bookQuery = text || "";
+    var box = $("word-search");
+    if (box && box.value !== bookQuery) { box.value = bookQuery; }
   }
 
   // 문제와 단어 외우기를 한 화면에 위아래로 둔다 (화면 전환 없음)
@@ -2164,6 +2283,19 @@
 
   $("seg-wrong").addEventListener("click", function () { setBookMode("wrong"); });
   $("seg-all").addEventListener("click", function () { setBookMode("all"); });
+
+  $("word-search").addEventListener("input", function (ev) {
+    setSearch(ev.target.value);
+    renderBook();
+  });
+  $("word-search").addEventListener("keydown", function (ev) {
+    if (ev.key === "Escape") { setSearch(""); renderBook(); }
+  });
+  $("search-clear").addEventListener("click", function () {
+    setSearch("");
+    renderBook();
+    $("word-search").focus();
+  });
   $("btn-next").addEventListener("click", nextQuestion);
   $("btn-export").addEventListener("click", exportSave);
   $("btn-import").addEventListener("click", function () { $("file-input").click(); });
